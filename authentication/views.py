@@ -6,6 +6,7 @@ from django.contrib import messages
 from django.contrib.auth import authenticate
 from django.contrib.auth import authenticate, login
 from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth.forms import AuthenticationForm
 
 
 # Create your views here.
@@ -55,3 +56,23 @@ def signout(request):
     logout(request)
     messages.success(request, "Logged out")
     return redirect('home')
+
+
+def admin(request):
+     
+    if request.method == 'POST':
+        
+        if request.POST.get('login_as_admin'):
+            
+            # If "Login as Admin" button is clicked
+            admin_username = 'admin'
+            admin_password = 'admin'
+
+            user = authenticate(username=admin_username, password=admin_password)
+            if user is not None and user.is_staff:
+                login(request, user)
+                messages.success(request, f"Logged in as {admin_username}")
+                return redirect('admin:index')  # Redirect to the admin dashboard
+
+    form = AuthenticationForm()
+    return render(request, 'authentication/admin.html', {'form': form})

@@ -64,12 +64,15 @@
         <!-- The user is authenticated -->
         <p>Hello {{ firstname }}! You are currently logged in.</p>
         <button type="submit"> <a href="/signout"> SignOut</a></button>
+        
     {%else%}
     <div class="button-container">
         <p style="color: blue">If Account already exists:</p>
     <button type="submit"> <a href="/signin"> SignIn</a></button>
         <p style="color: blue">To Create an account: </p>
     <button type="submit"> <a href="/signup"> SignUp</a></button>
+    
+    <button type="submit"> <a href ="/admin">Admin</button>
     
     </div>
     {% endif %}
