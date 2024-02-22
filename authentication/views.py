@@ -6,7 +6,36 @@ from django.contrib import messages
 from django.contrib.auth import authenticate
 from django.contrib.auth import authenticate, login
 from django.contrib.auth import authenticate, login, logout
-from django.contrib.auth.forms import AuthenticationForm
+from django.contrib.auth.forms import UserCreationForm
+
+def teacher_login(request):
+    if request.method == 'POST':
+        # Handle login form submission
+        username = request.POST.get('username')
+        password = request.POST.get('password')
+        user = authenticate(request, username=username, password=password)
+        if user is not None:
+            login(request, user)
+            return redirect('dashboard')  # Redirect to the dashboard or another page
+        else:
+            # Handle invalid login
+            pass
+
+    return render(request, 'signin.html')
+
+def teacher_signup(request):
+    if request.method == 'POST':
+        # Handle signup form submission using Django's built-in UserCreationForm
+        form = UserCreationForm(request.POST)
+        if form.is_valid():
+            form.save()
+            return redirect('teacher_login')  # Redirect to the login page after signup
+
+    else:
+        form = UserCreationForm()
+
+    return render(request, 'signup.html', {'form': form})
+
 
 
 # Create your views here.
@@ -17,16 +46,14 @@ def home(request):
 def signup(request):
     
     if request.method == "POST":
-        username = request.POST['username']
-        firstname = request.POST['firstname']
-        lastname = request.POST['lastname']
+        newUsername = request.POST['newUsername']
+        
         email = request.POST['email']
-        pass1 = request.POST['pass1']
-        pass2 = request.POST['pass2']
+        newPassword = request.POST['newPassword']
+        confirmPassword = request.POST['confirmPassword']
     
-        myuser = User.objects.create_user(username, email, pass1)
-        myuser.first_name = firstname
-        myuser.last_name = lastname
+        myuser = User.objects.create_user(newUsername, email, newPassword)
+        
         
         myuser.save()
         messages.success(request, "Created")
@@ -34,7 +61,7 @@ def signup(request):
         return redirect('signin')
     
     
-    return render(request, "authentication/signup.html")
+    return render(request, "authentication/index.html")
 
 def signin(request):
     if request.method == 'POST':
@@ -58,21 +85,6 @@ def signout(request):
     return redirect('home')
 
 
-def admin(request):
+def admilogin(request):
      
-    if request.method == 'POST':
-        
-        if request.POST.get('login_as_admin'):
-            
-            # If "Login as Admin" button is clicked
-            admin_username = 'admin'
-            admin_password = 'admin'
-
-            user = authenticate(username=admin_username, password=admin_password)
-            if user is not None and user.is_staff:
-                login(request, user)
-                messages.success(request, f"Logged in as {admin_username}")
-                return redirect('admin:index')  # Redirect to the admin dashboard
-
-    form = AuthenticationForm()
-    return render(request, 'authentication/admin.html', {'form': form})
+    return render(request, "authentication/admilogin.html")
